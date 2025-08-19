@@ -33,32 +33,61 @@ public class boardController extends HttpServlet {
 		request.setCharacterEncoding("utf-8");
 		
 		String uri =request.getRequestURI();
-		//System.out.println("URI : " + uri);
+		System.out.println("URI : " + uri);
 		String conPath =request.getContextPath();
-		//System.out.println("CONPATH : " + conPath );
+		System.out.println("CONPATH : " + conPath );
 		
-		String comm =(uri.substring(conPath.length()+ 1)); // 최종 요청 값
+		String comm =(uri.substring(conPath.length())); // 최종 요청 값
 		String viewPage = "";
 		
 		BoardDao bDao = new BoardDao();
 		List<BoardDto> bDtos = new ArrayList<BoardDto>();
 		
-		if(comm.equals("boardList.do")) { // 게시판 모든 글 목록 보기 요청
+		if(comm.equals("/boardList.do")) { // 게시판 모든 글 목록 보기 요청
 			bDtos = bDao.boardList();
 			request.setAttribute("bDtos", bDtos);		
 			viewPage = "boardList.jsp";
-		} else if (comm.equals("writeForm.do")) { // 글쓰기 폼으로 이동 요청
+		} else if (comm.equals("/writeForm.do")) { // 글쓰기 폼으로 이동 요청
 			viewPage = "writeForm.jsp";
-		} else if (comm.equals("modifyForm.do")) { // 글 수정 폼으로 이동 요청
+		} else if (comm.equals("/modifyForm.do")) { // 글 수정 폼으로 이동 요청
 			viewPage = "modifyForm.jsp";
-		} else if (comm.equals("deleteForm.do")) { // 글 삭제 폼으로 이동 요청
+		} else if (comm.equals("/deleteForm.do")) { // 글 삭제 폼으로 이동 요청
+			
+			String bnum = request.getParameter("bnum");
+			BoardDto bDto = bDao.contentView(bnum);
+			request.setAttribute("bDto", bDto);
 			viewPage = "deleteForm.jsp";
-		} else if (comm.equals("delete.do")) { // 글 삭제 확인
-			viewPage = "boardList.do";
-		} else if (comm.equals("contentView.do")) { // 글 내용 확인 요청
+			 
+		} else if (comm.equals("/delete.do")) { // 글 삭제 확인
+			String bnum = request.getParameter("bnum");
+			bDao.contentDelete(bnum);
+			
+			response.sendRedirect("boardList.do");
+			return;
+		
+		} else if (comm.equals("/contentView.do")) { // 글 내용 확인 요청
+			request.setCharacterEncoding("utf-8");
+			String bnum = request.getParameter("bnum"); // 유저가 선택한 글의 번호
+			
+			BoardDto bDto = bDao.contentView(bnum);
+			request.setAttribute("bDto", bDto);
+			
 			viewPage = "contentView.jsp";
-		}  else if (comm.equals("index.do")) { // 홈 화면으로 이동 요청
+		} else if (comm.equals("/index.do")) { // 홈 화면으로 이동 요청
 			viewPage = "index.jsp";
+		} else if (comm.equals("/writeOk.do")) { // 홈 화면으로 이동 요청
+			request.setCharacterEncoding("utf-8");
+			
+			String btitle = request.getParameter("btitle");
+			String bcontent = request.getParameter("bcontent");
+			String member_id = request.getParameter("member_id");
+			
+			//viewPage = "boardList.do";
+			
+			bDao.boardWrite(btitle, bcontent,member_id);
+			
+			response.sendRedirect("boardList.do");
+		    return;
 		}
 	
 		RequestDispatcher dispatcher = request.getRequestDispatcher(viewPage);

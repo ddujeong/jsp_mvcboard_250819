@@ -22,15 +22,15 @@
     <a href="boardList.do" class="write-btn">← 목록으로</a>
   </div>
 
-  <form class="post-form" action="submit.do" method="post">
-    <label for="title">제목</label>
-    <input type="text" id="title" name="title" required>
+  <form class="post-form" action="writeOk.do" method="post">
+    <label for="btitle">제목</label>
+    <input type="text" id="btitle" name="btitle" required>
 
-    <label for="author">작성자</label>
-    <input type="text" id="author" name="author" required>
+    <label for="member_id">작성자</label>
+    <input type="text" id="member_id" name="member_id" required>
 
-    <label for="content">내용</label>
-    <textarea id="content" name="content" rows="10" required></textarea>
+    <label for="bcontent">내용</label>
+    <textarea id="bcontent" name="bcontent" rows="10" required></textarea>
 
     <div class="form-actions">
       <button type="submit" class="action-btn">작성 완료</button>

@@ -23,26 +23,23 @@
   </div>
 
   <article class="post-detail">
-    <h1 class="post-title">게시글 제목 예시입니다.</h1>
+    <h1 class="post-title"> ${bDto.btitle}</h1>
     <div class="post-meta">
-      <span>작성자: 홍길동</span>
-      <span>작성일: 2025-08-19</span>
-      <span>조회수: 128</span>
+      <span>작성자: ${bDto.member_id}</span>
+      <span>작성일: ${bDto.bdate }</span>
+      <span>조회수: ${bDto.bhit }</span>
     </div>
     <hr />
     <div class="post-content">
       <p>
-        여기에 게시글 내용이 들어갑니다. HTML 태그 허용 시 적절히 렌더링 되고,
-        줄바꿈, 이미지 등도 포함될 수 있습니다.
+        ${bDto.bcontent }
       </p>
-      <p>필요하다면 코드, 표, 인용문 등 다양한 콘텐츠도 포함 가능합니다.</p>
     </div>
-
    
   <div class="post-actions">
   <a href="boardList.do" class="action-btn secondary">목록으로</a>
-  <a href="modifyForm.do?postId=123" class="action-btn">수정</a>
-  <a href="deleteForm.do?postId=123" class="action-btn delete">삭제</a>
+  <a href="modifyForm.do?bnum=${bDto.bnum }" class="action-btn">수정</a>
+  <a href="deleteForm.do?bnum=${bDto.bnum }" class="action-btn delete">삭제</a>
   
 </div>
   </article>
