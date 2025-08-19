@@ -82,9 +82,9 @@ public class boardController extends HttpServlet {
 			String bcontent = request.getParameter("bcontent");
 			String member_id = request.getParameter("member_id");
 			
-			//viewPage = "boardList.do";
-			
 			bDao.boardWrite(btitle, bcontent,member_id);
+			
+			// viewPage = "boardList.do";
 			
 			response.sendRedirect("boardList.do");
 		    return;
