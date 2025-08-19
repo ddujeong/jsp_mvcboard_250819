@@ -1,0 +1,419 @@
+@charset "UTF-8";
+/* ----------------------------
+   공통 설정
+---------------------------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', 'Noto Sans KR', sans-serif;
+  background: #f9fafb;
+  color: #1f2937;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* ----------------------------
+   컨테이너
+---------------------------- */
+.container {
+  max-width: 960px;
+  margin: 40px auto 60px;
+  padding: 0 20px;
+}
+
+/* ----------------------------
+   헤더 & 타이틀
+---------------------------- */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e0e3e8;
+}
+
+.board-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.board-title .icon {
+  font-size: 22px;
+  line-height: 1;
+}
+
+.board-title h2 {
+  font-size: 22px;
+  font-weight: 600;
+  margin: 0;
+  color: #1f2937;
+}
+
+.post-count {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.post-count strong {
+  color: #374151;
+  font-weight: 600;
+}
+
+/* ----------------------------
+   버튼 스타일
+---------------------------- */
+.write-btn,
+.enter-btn,
+.action-btn {
+  padding: 10px 20px;
+  font-size: 14px;
+  background: none;
+  border: 1px solid #6366f1;
+  color: #6366f1;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.write-btn:hover,
+.enter-btn:hover,
+.action-btn:hover {
+  background: #6366f1;
+  color: white;
+}
+
+.action-btn.delete {
+  border-color: #ef4444;
+  color: #ef4444;
+}
+
+.action-btn.delete:hover {
+  background: #ef4444;
+}
+
+/* ----------------------------
+   게시판 테이블
+---------------------------- */
+.board-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  border-radius: 8px;
+  overflow: hidden;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+
+.board-table thead {
+  background-color: #004466;
+  color: white;
+}
+
+.board-table th, .board-table td {
+  padding: 12px 15px;
+  text-align: center;
+  border-bottom: 1px solid #ddd;
+}
+
+.board-table tbody tr:hover {
+  background-color: #f1f9ff;
+}
+
+.board-table a {
+  color: #004466;
+  text-decoration: none;
+}
+
+.board-table a:hover {
+  text-decoration: underline;
+}
+
+
+/* ----------------------------
+   게시글 상세 보기
+---------------------------- */
+.post-detail {
+  background: #fff;
+  padding: 24px 30px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.post-title {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.post-meta {
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 20px;
+  display: flex;
+  gap: 20px;
+}
+
+.post-content p {
+  font-size: 16px;
+  color: #374151;
+  line-height: 1.6;
+  margin-bottom: 16px;
+  white-space: pre-line;
+}
+
+/* ----------------------------
+   인덱스 페이지
+---------------------------- */
+.navbar {
+  background-color: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 16px 0;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.nav-container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  font-weight: 600;
+  font-size: 20px;
+}
+
+nav a {
+  margin-left: 20px;
+  color: #374151;
+  font-size: 14px;
+  transition: color 0.2s ease;
+}
+
+nav a:hover {
+  color: #6366f1;
+}
+
+.hero {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 80vh;
+  text-align: center;
+  padding: 40px 20px;
+  background: linear-gradient(to bottom right, #f9fafb, #eceef1);
+}
+
+.hero-inner {
+  max-width: 700px;
+}
+
+.hero h1 {
+  font-size: 32px;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.hero p {
+  font-size: 16px;
+  color: #6b7280;
+  margin-bottom: 32px;
+}
+
+/* ----------------------------
+   반응형
+---------------------------- */
+@media (max-width: 768px) {
+  .table-row {
+    grid-template-columns: 1fr;
+    grid-gap: 10px;
+  }
+
+  .nav-container {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .hero h1 {
+    font-size: 26px;
+  }
+
+  .post-meta {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .write-btn {
+    align-self: stretch;
+    text-align: center;
+  }
+}
+/* ----------------------------
+   글쓰기 & 수정 공통 폼 스타일
+---------------------------- */
+.post-form {
+  background: #fff;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.post-form label {
+  font-weight: 600;
+  font-size: 14px;
+  color: #374151;
+}
+
+.post-form input,
+.post-form textarea {
+  padding: 12px 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: inherit;
+  resize: vertical;
+}
+
+.post-form input:focus,
+.post-form textarea:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+}
+
+.form-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 10px;
+}
+.board-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.search-form {
+  display: flex;
+  align-items: center;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.search-form input {
+  border: none;
+  padding: 8px 12px;
+  font-size: 14px;
+  width: 160px;
+}
+
+.search-form input:focus {
+  outline: none;
+}
+
+.search-form button {
+  background: #6366f1;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.3s;
+}
+
+.search-form button:hover {
+  background: #4f46e5;
+}
+.action-btn.secondary {
+  border-color: #9ca3af;
+  color: #374151;
+}
+
+.action-btn.secondary:hover {
+  background: #9ca3af;
+  color: #fff;
+}
+.delete-confirm {
+  background: #fff;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  text-align: center;
+  font-size: 18px;
+  color: #b91c1c; /* 빨간색 경고 */
+  margin-top: 40px;
+  user-select: none;
+}
+
+.delete-confirm p {
+  margin-bottom: 30px;
+  font-weight: 600;
+}
+.site-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 2rem;
+  background-color: #222;
+  color: #fff;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.site-header .logo a {
+  color: #61dafb;
+  font-weight: 700;
+  font-size: 1.5rem;
+  text-decoration: none;
+}
+
+.nav-links a {
+  margin-left: 1.5rem;
+  color: #ddd;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.nav-links a:hover {
+  color: #61dafb;
+}
+
+.btn-home {
+  font-size: 1.4rem;
+  color: #61dafb;
+  text-decoration: none;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.btn-home:hover {
+  background-color: rgba(97, 218, 251, 0.2);
+}
