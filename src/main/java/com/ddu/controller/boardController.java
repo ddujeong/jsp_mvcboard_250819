@@ -64,7 +64,6 @@ public class boardController extends HttpServlet {
 				response.sendRedirect("login.do?msg=2");
 				return;
 			}
-		
 		} else if (comm.equals("/modifyForm.do")) { // 글 수정 폼으로 이동 요청
 			request.setCharacterEncoding("utf-8");
 			String bnum = request.getParameter("bnum");
@@ -103,8 +102,10 @@ public class boardController extends HttpServlet {
 		
 		} else if (comm.equals("/contentView.do")) { // 글 내용 확인 요청
 			request.setCharacterEncoding("utf-8");
-			String bnum = request.getParameter("bnum"); // 유저가 선택한 글의 번호
-			BoardDto bDto = bDao.contentView(Integer.parseInt(bnum));	
+			int bnum = Integer.parseInt(request.getParameter("bnum")); // 유저가 선택한 글의 번호
+			bDao.updateBhit(bnum); // 조회수 증가
+			
+			BoardDto bDto = bDao.contentView(bnum);	
 				if (bDto == null) { // 해당글이 존재 하지 않을때
 					 request.setAttribute("deleteMsg", "해당글은 존재하지 않는 글 입니다.");
 					// response.sendRedirect("boardList.do?msg=1"); // -> 2번째 방법 
@@ -116,19 +117,23 @@ public class boardController extends HttpServlet {
 				request.setAttribute("bDtos", bDtos);	
 			viewPage = "contentView.jsp";
 		
-		} /*
-			 * else if (comm.equals("/search.do")) { // 글 내용 확인 요청
-			 * request.setCharacterEncoding("utf-8"); String btitle =
-			 * request.getParameter("btitle".strip()); // 유저가 선택한 글의 번호 bDtos =
-			 * bDao.contentSearch(btitle); System.out.println(btitle);
-			 * System.out.println("dto값" + bDtos); if (btitle.equals(" ")) { // 해당글이 존재 하지
-			 * 않을때 request.setAttribute("deleteMsg", "해당 제목의 게시글은 존재하지 않는 글 입니다."); } bDtos
-			 * = bDao.boardList(); request.setAttribute("bDtos", bDtos);
-			 * 
-			 * viewPage = "boardList.do";
-			 * 
-			 * }
-			 */ else if (comm.equals("/index.do")) { // 홈 화면으로 이동 요청
+		} else if (comm.equals("/search.do")) { // 글 내용 확인 요청
+			request.setCharacterEncoding("utf-8"); 
+			bDtos = bDao.boardList(); 
+			String empty = "";
+			String btitle = request.getParameter("btitle"); // 유저가 선택한 글의 번호 bDtos =
+			bDao.contentSearch(btitle.trim());
+			System.out.println(btitle.trim());
+			
+			  if (btitle.equals(empty)) { // 해당글이 존재 하지 않을때
+			  request.setAttribute("deleteMsg", "해당 제목의 게시글은 존재하지 않는 글 입니다."); 
+			  } 
+		
+		  request.setAttribute("bDtos", bDtos);
+  
+		  viewPage = "boardList.do";
+  
+		}else if (comm.equals("/index.do")) { // 홈 화면으로 이동 요청
 			viewPage = "index.jsp";
 		
 		} else if (comm.equals("/writeOk.do")) { // 홈 화면으로 이동 요청
@@ -147,7 +152,7 @@ public class boardController extends HttpServlet {
 		} else if (comm.equals("/login.do")) { 
 			viewPage = "login.jsp";
 		
-		}else if (comm.equals("/loginOk.do")) { 
+		} else if (comm.equals("/loginOk.do")) { 
 			request.setCharacterEncoding("utf-8");
 			
 			String login_id = request.getParameter("member_id");
@@ -158,7 +163,9 @@ public class boardController extends HttpServlet {
 			if (loginFlag == 1) {
 				session =request.getSession();
 				session.setAttribute("session_id", login_id);
-			}else {
+			} else if (comm.equals("/logout.do")) { 
+				
+			} else {
 				response.sendRedirect("login.do?msg=1");
 				return;
 			}

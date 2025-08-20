@@ -7,7 +7,9 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
+
 import com.ddu.dto.BoardDto;
+import com.ddu.dto.MemberDto;
 
 public class BoardDao {
 	
@@ -21,8 +23,10 @@ public class BoardDao {
 	ResultSet rs = null;
 	
 	public List<BoardDto> boardList() { // 게시판의 모든 글 리스트를 가져와서 반환하는 메서드
-		String sql ="SELECT * FROM board ORDER BY bnum DESC";
+		//String sql ="SELECT * FROM board ORDER BY bnum DESC";
+		String sql ="SELECT row_number() OVER (order by bnum) AS bno, b.bnum, b.btitle,b.bcontent,b.member_id, m.member_email, b.bhit, b.bdate FROM board AS b INNER JOIN members AS m ON b.member_id = m.member_id ORDER BY bno DESC";
 		List<BoardDto> bDtos = new ArrayList<BoardDto>();
+		
 		try {
 			Class.forName(driverName);
 			conn = DriverManager.getConnection(url, username, password);	
@@ -34,10 +38,17 @@ public class BoardDao {
 				String btitle = rs.getString("btitle");
 				String bcontent = rs.getString("bcontent");
 				String member_id = rs.getString("member_id");
+				String member_email = rs.getString("member_email");
 				int bhit = rs.getInt("bhit");
 				String bdate = rs.getString("bdate");
+				int bno = rs.getInt("bno");
 				
-				BoardDto bDto = new BoardDto(bnum, btitle, bcontent, member_id, bhit, bdate);
+				MemberDto memberDto = new MemberDto(); 
+				memberDto.setMember_email(member_email);
+				memberDto.setMember_id(member_id);
+				
+				
+				BoardDto bDto = new BoardDto(bno, bnum, btitle, bcontent, member_id, bhit, bdate, memberDto);
 				
 				bDtos.add(bDto);
 			}
@@ -92,7 +103,7 @@ public class BoardDao {
 		}
 	}
 	public BoardDto contentView(int bnum) { // 게시판의 글 목록에서 유저가 클릭한 글 번호의 글 dto 반환 메서드
-		String sql ="SELECT * FROM board WHERE bnum=?";
+		String sql ="SELECT b.bnum, b.btitle,b.bcontent,b.member_id, m.member_email, b.bhit, b.bdate FROM board AS b INNER JOIN members AS m ON b.member_id = m.member_id  WHERE bnum=?";
 		BoardDto bDto =null;
 		try {
 			Class.forName(driverName);
@@ -104,6 +115,7 @@ public class BoardDao {
 			rs = pstmt.executeQuery();
 			
 			 if (rs.next()) {
+				
 				bDto =new BoardDto();
 				bDto.setBnum(rs.getInt("bnum"));
 				bDto.setBtitle(rs.getString("btitle"));
@@ -111,7 +123,16 @@ public class BoardDao {
 				bDto.setMember_id(rs.getString("member_id"));
 				bDto.setBhit(rs.getInt("bhit"));
 				bDto.setBdate(rs.getString("bdate"));
-			}
+				
+				MemberDto memberDto = new MemberDto();
+				memberDto.setMember_email(rs.getString("member_email"));
+				memberDto.setMember_id(rs.getString("member_id"));
+				
+				bDto.setMemberDto(memberDto);
+				
+				System.out.println(rs.getString("member_email"));
+			
+			 }
 		} catch(Exception e) {	
 			System.out.println("게시글 조회 실패");
 			e.printStackTrace();
@@ -141,7 +162,7 @@ public class BoardDao {
 			conn = DriverManager.getConnection(url, username, password);	
 			pstmt = conn.prepareStatement(sql); 
 			
-			pstmt.setString(1, searchBtitle);
+			pstmt.setString(1, "%"+searchBtitle.trim()+"%");
 			
 			rs = pstmt.executeQuery();
 			
@@ -235,8 +256,34 @@ public class BoardDao {
 				e.printStackTrace();
 			}	
 		}
+	}public void updateBhit(int bnum) { // 조회수 증가시켜주는 메서드
+		String sql = "UPDATE board SET bhit=bhit+1 WHERE bnum=?";
+		try {
+			Class.forName(driverName);
+			conn = DriverManager.getConnection(url, username, password);	
+			pstmt = conn.prepareStatement(sql); 
+			
+			pstmt.setInt(1,bnum);
+			
+			pstmt.executeUpdate();
+			
+		} catch(Exception e) {	
+			System.out.println("조회수 업데이트 실패");
+			e.printStackTrace();
+		} finally { 
+			try {
+				if(pstmt != null){
+				pstmt.close();
+				}
+				if(conn != null){ 	
+				conn.close();
+				} 
+			} catch(Exception e) {
+				e.printStackTrace();
+			}	
+	
+		}
 	}
-		
-	}
+}
 
 

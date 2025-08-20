@@ -1,5 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
    <%
   	String msg =(String)request.getAttribute("deleteMsg");
   	// 웹 서블릿에서 넘겨준 값을 뺄때는 getAttribute 사용
@@ -38,6 +40,7 @@
     <h1 class="post-title"> ${bDto.btitle}</h1>
     <div class="post-meta">
       <span>작성자: ${bDto.member_id}</span>
+      <span>이메일: ${bDto.memberDto.member_email }</span>
       <span>작성일: ${bDto.bdate }</span>
       <span>조회수: ${bDto.bhit }</span>
     </div>
@@ -51,9 +54,10 @@
    
   <div class="post-actions">
   <a href="boardList.do" class="action-btn secondary">목록으로</a>
-  <a href="modifyForm.do?bnum=${bDto.bnum }" class="action-btn">수정</a>
-  <a href="deleteForm.do?bnum=${bDto.bnum }" class="action-btn delete">삭제</a>
-  
+  	<c:if test="${sessionScope.session_id == bDto.member_id}">
+  		<a href="modifyForm.do?bnum=${bDto.bnum }" class="action-btn">수정</a>
+  		<a href="deleteForm.do?bnum=${bDto.bnum }" class="action-btn delete">삭제</a>
+  	</c:if>
 </div>
   </article>
 
