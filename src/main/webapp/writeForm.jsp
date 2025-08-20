@@ -27,7 +27,7 @@
     <input type="text" id="btitle" name="btitle" required>
 
     <label for="member_id">작성자</label>
-    <input type="text" id="member_id" name="member_id" required>
+    <input type="text" id="member_id" name="member_id" value="${sessionScope.session_id }" readonly="readonly">
 
     <label for="bcontent">내용</label>
     <textarea id="bcontent" name="bcontent" rows="10" required></textarea>

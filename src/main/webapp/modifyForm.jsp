@@ -22,22 +22,22 @@
     <a href="boardList.do" class="write-btn">← 목록으로</a>
   </div>
 
-  <form class="post-form" action="update.jsp" method="post">
+  <form class="post-form" action="modify.do" method="post">
     <!-- hidden id or postId for backend -->
-    <input type="hidden" name="postId" value="123" />
+    <input type="hidden" name="bnum" value="${bDto.bnum }" />
 
     <label for="title">제목</label>
-    <input type="text" id="title" name="title" value="기존 제목입니다" required>
+    <input type="text" id="btitle" name="btitle" value="${bDto.btitle}" required>
 
     <label for="author">작성자</label>
-    <input type="text" id="author" name="author" value="홍길동" required>
+    <input type="text" id="member_id" name="member_id" value="${bDto.member_id}" readonly required>
 
     <label for="content">내용</label>
-    <textarea id="content" name="content" rows="10" required>기존에 작성된 게시글 내용이 여기에 표시됩니다.</textarea>
+    <textarea id="bcontent" name="bcontent" rows="10" required>${bDto.bcontent }</textarea>
 
     <div class="form-actions">
       <button type="submit" class="action-btn">수정 완료</button>
-      <a href="boardList.do" class="action-btn delete">취소</a>
+      <a href="javascript:history.go(-1)" class="action-btn delete">취소</a>
     </div>
   </form>
 

@@ -1,5 +1,17 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+   <%
+  	String msg =(String)request.getAttribute("deleteMsg");
+  	// 웹 서블릿에서 넘겨준 값을 뺄때는 getAttribute 사용
+  	if(msg != null){
+  		out.println("<script>alert('" + msg + "');window.location.href='boardList.do';</script>");
+  	}
+  %> 
+    <%-- <% //2번째 방법
+  	if( request.getParameter("msg") != null){
+  		out.println("<script>alert('해당 글은 존재하지 않는 글입니다!');window.location.href='boardList.do';</script>");
+  	}
+  	%>  --%>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -32,8 +44,9 @@
     <hr />
     <div class="post-content">
       <p>
-        ${bDto.bcontent }
+        ${bDto.bcontent }<br>
       </p>
+   		
     </div>
    
   <div class="post-actions">

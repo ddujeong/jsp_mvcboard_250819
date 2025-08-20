@@ -91,27 +91,26 @@ public class BoardDao {
 			}	
 		}
 	}
-	public BoardDto contentView(String bnum) { // 게시판의 글 목록에서 유저가 클릭한 글 번호의 글 dto 반환 메서드
+	public BoardDto contentView(int bnum) { // 게시판의 글 목록에서 유저가 클릭한 글 번호의 글 dto 반환 메서드
 		String sql ="SELECT * FROM board WHERE bnum=?";
-		BoardDto bDto =new BoardDto();
+		BoardDto bDto =null;
 		try {
 			Class.forName(driverName);
 			conn = DriverManager.getConnection(url, username, password);	
 			pstmt = conn.prepareStatement(sql); 
 			
-			pstmt.setString(1, bnum);
+			pstmt.setInt(1, bnum);
 			
 			rs = pstmt.executeQuery();
 			
 			 if (rs.next()) {
-				
+				bDto =new BoardDto();
 				bDto.setBnum(rs.getInt("bnum"));
 				bDto.setBtitle(rs.getString("btitle"));
 				bDto.setBcontent(rs.getString("bcontent"));
 				bDto.setMember_id(rs.getString("member_id"));
 				bDto.setBhit(rs.getInt("bhit"));
 				bDto.setBdate(rs.getString("bdate"));
-				
 			}
 		} catch(Exception e) {	
 			System.out.println("게시글 조회 실패");
@@ -130,11 +129,56 @@ public class BoardDao {
 			} catch(Exception e) {
 				e.printStackTrace();
 			}	
-		}return bDto; // 글(bDto) 담긴 bDtos 를 반환
+		}return bDto; // 글(bDto) 담긴 bDto 를 반환
 	
 		
 	}
-	public void contentDelete(String bnum ) {
+	public List<BoardDto> contentSearch(String searchBtitle) { // 게시판의 글 목록에서 유저가 클릭한 글 번호의 글 dto 반환 메서드
+		String sql ="SELECT * FROM board WHERE btitle LIKE %?% ORDER BY bnum DESC";
+		List<BoardDto> bDtos = new ArrayList<BoardDto>();
+		try {
+			Class.forName(driverName);
+			conn = DriverManager.getConnection(url, username, password);	
+			pstmt = conn.prepareStatement(sql); 
+			
+			pstmt.setString(1, searchBtitle);
+			
+			rs = pstmt.executeQuery();
+			
+			while (rs.next()) {
+				int bnum = rs.getInt("bnum");
+				String btitle = rs.getString("btitle");
+				String bcontent = rs.getString("bcontent");
+				String member_id = rs.getString("member_id");
+				int bhit = rs.getInt("bhit");
+				String bdate = rs.getString("bdate");
+				
+				BoardDto bDto = new BoardDto(bnum, btitle, bcontent, member_id, bhit, bdate);
+				
+				bDtos.add(bDto);
+			}
+		} catch(Exception e) {	
+			System.out.println("게시글 조회 실패");
+			e.printStackTrace();
+		} finally { 
+			try {
+				if (rs != null) {
+				rs.close();
+				}
+				if(pstmt != null){
+				pstmt.close();
+				}
+				if(conn != null){ 	
+				conn.close();
+				} 
+			} catch(Exception e) {
+				e.printStackTrace();
+			}	
+		}return bDtos; // 글(bDto) 담긴 bDto 를 반환
+	
+		
+	}
+	public void contentDelete(int bnum ) {
 		String sql = "DELETE FROM board WHERE bnum=?";
 		// 새글 등록이므로 조회수는 0부터 시작 -> bhit 초기값은 0으로 입력
 		
@@ -143,7 +187,7 @@ public class BoardDao {
 			conn = DriverManager.getConnection(url, username, password);	
 			pstmt = conn.prepareStatement(sql); 
 			
-			pstmt.setString(1,bnum);
+			pstmt.setInt(1,bnum);
 			
 			pstmt.executeUpdate();
 			
@@ -163,5 +207,36 @@ public class BoardDao {
 			}	
 		}
 	}
-}
+	public void contentModify(String btitle, String bcontent, int bnum) {
+		String sql = "UPDATE board SET btitle=?, bcontent=? WHERE bnum=?";
+		try {
+			Class.forName(driverName);
+			conn = DriverManager.getConnection(url, username, password);	
+			pstmt = conn.prepareStatement(sql); 
+			
+			pstmt.setString(1,btitle);
+			pstmt.setString(2,bcontent);
+			pstmt.setInt(3,bnum);
+			
+			pstmt.executeUpdate();
+			
+		} catch(Exception e) {	
+			System.out.println("글 수정 실패");
+			e.printStackTrace();
+		} finally { 
+			try {
+				if(pstmt != null){
+				pstmt.close();
+				}
+				if(conn != null){ 	
+				conn.close();
+				} 
+			} catch(Exception e) {
+				e.printStackTrace();
+			}	
+		}
+	}
+		
+	}
+
 

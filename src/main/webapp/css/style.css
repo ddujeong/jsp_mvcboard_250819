@@ -417,3 +417,104 @@ nav a:hover {
 .btn-home:hover {
   background-color: rgba(97, 218, 251, 0.2);
 }
+/* 로그인 폼 스타일 */
+
+.login-form {
+  max-width: 400px;
+  margin: 60px auto;
+  background: #fff;
+  padding: 30px 35px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  font-family: inherit;
+}
+
+.login-form label {
+  font-weight: 600;
+  font-size: 14px;
+  color: #374151;
+}
+
+.login-form input {
+  padding: 12px 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: inherit;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.login-form input:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+}
+
+.login-form button {
+  padding: 12px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+  background-color: #6366f1;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.login-form button:hover {
+  background-color: #4f46e5;
+  box-shadow: 0 2px 8px rgba(79, 70, 229, 0.5);
+}
+
+.login-form .form-footer {
+  text-align: center;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.login-form .form-footer a {
+  color: #6366f1;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.login-form .form-footer a:hover {
+  text-decoration: underline;
+}
+
+/* 모바일 대응 */
+@media (max-width: 480px) {
+  .login-form {
+    margin: 30px 20px;
+    padding: 25px 20px;
+  }
+}
+.login-container {
+  max-width: 480px;
+  margin: 80px auto;
+  padding: 30px;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  text-align: center;
+}
+
+.login-footer {
+  margin-top: 20px;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.login-footer a {
+  color: #6366f1;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.login-footer a:hover {
+  text-decoration: underline;
+}

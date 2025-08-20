@@ -24,8 +24,9 @@
   </div>
 
   <div class="board-actions">
-    <form class="search-form" action="boardList.do" method="get">
-      <input type="text" name="query" placeholder="검색어 입력" />
+    <form class="search-form" action="search.do" method="post">
+    
+      <input type="text" name="btitle" placeholder="검색어 입력" />
       <button type="submit">검색</button>
     </form>
     <a href="writeForm.do" class="write-btn">+ 글쓰기</a>
