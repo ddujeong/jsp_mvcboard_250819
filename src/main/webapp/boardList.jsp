@@ -19,7 +19,7 @@
   <div class="board-title">
     <span class="icon">📌</span>
     <a href="boardList.do"><h2>게시판</h2></a>
-    <span class="post-count">총 <strong>${fn:length(bDtos) }</strong>개 글</span>
+    <span class="post-count">총 <strong>${totalPage }</strong>개 글</span>
   </div>
 
   <div class="board-actions">
@@ -69,6 +69,31 @@
     </c:forEach>
   </tbody>
 </table>
+<div class="pagination-wrapper">
+  <ul class="pagination">
+    <!-- 이전 버튼 -->
+    <c:if test="${currentPage > 1}">
+      <li><a href="boardList.do?page=1">&laquo;</a></li>
+    </c:if>
+    <c:if test="${startPage > 1 }">
+		<li><a href="boardList?page=${startPage -1 }">&lt;</a></li>
+	</c:if>
+    <!-- 페이지 번호 목록 -->
+    <c:forEach var="i" begin="${startPage}" end="${endPage}">
+      <li class="${i == currentPage ? 'active' : ''}">
+        <a href="boardList.do?page=${i}">${i}</a>
+      </li>
+    </c:forEach>
+
+    <!-- 다음 버튼 -->
+    <c:if test="${endPage < totalPage}">
+      <li><a href="boardList.do?page=${endPage +1}">&gt;</a></li>
+    </c:if>
+    <c:if test="${currentPage < totalPage}">
+      <li><a href="boardList.do?page=${totalPage}">&raquo;</a></li>
+    </c:if>
+  </ul>
+</div>
 </div>
 </body>
 </html>

@@ -140,6 +140,41 @@ a {
 .board-table a:hover {
   text-decoration: underline;
 }
+.pagination-wrapper {
+  display: flex;
+  justify-content: center;
+  margin: 40px 0 20px;
+}
+
+.pagination {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  gap: 8px;
+}
+
+.pagination li a {
+  display: block;
+  padding: 8px 14px;
+  font-size: 14px;
+  color: #6366f1;
+  border: 1px solid #6366f1;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.pagination li a:hover {
+  background-color: #6366f1;
+  color: #ffffff;
+}
+
+.pagination li.active a {
+  background-color: #6366f1;
+  color: #ffffff;
+  font-weight: 600;
+  pointer-events: none;
+  border-color: #6366f1;
+}
 
 
 /* ----------------------------

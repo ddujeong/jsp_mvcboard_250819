@@ -17,6 +17,7 @@ public class BoardDao {
 	private String url = "jdbc:mysql://localhost:3306/jspdb";
 	private String username = "root";
 	private String password = "12345";
+	public static final int PAGE_SIZE = 10;
 	
 	Connection conn = null;
 	PreparedStatement pstmt = null;
@@ -24,7 +25,11 @@ public class BoardDao {
 	
 	public List<BoardDto> boardList() { // 게시판의 모든 글 리스트를 가져와서 반환하는 메서드
 		//String sql ="SELECT * FROM board ORDER BY bnum DESC";
-		String sql ="SELECT row_number() OVER (order by bnum) AS bno, b.bnum, b.btitle,b.bcontent,b.member_id, m.member_email, b.bhit, b.bdate FROM board AS b INNER JOIN members AS m ON b.member_id = m.member_id ORDER BY bno DESC";
+		String sql ="SELECT row_number() OVER (order by bnum) AS bno, "
+				+ "b.bnum, b.btitle,b.bcontent,b.member_id, m.member_email, b.bhit, b.bdate "
+				+ "FROM board AS b "
+				+ "LEFT JOIN members AS m ON b.member_id = m.member_id "
+				+ "ORDER BY bno DESC";
 		List<BoardDto> bDtos = new ArrayList<BoardDto>();
 		
 		try {
@@ -103,7 +108,10 @@ public class BoardDao {
 		}
 	}
 	public BoardDto contentView(int bnum) { // 게시판의 글 목록에서 유저가 클릭한 글 번호의 글 dto 반환 메서드
-		String sql ="SELECT b.bnum, b.btitle,b.bcontent,b.member_id, m.member_email, b.bhit, b.bdate FROM board AS b INNER JOIN members AS m ON b.member_id = m.member_id  WHERE bnum=?";
+		String sql ="SELECT b.bnum, b.btitle,b.bcontent,b.member_id, m.member_email, b.bhit, b.bdate "
+				+ "FROM board AS b "
+				+ "INNER JOIN members AS m ON b.member_id = m.member_id  "
+				+ "WHERE bnum=?";
 		BoardDto bDto =null;
 		try {
 			Class.forName(driverName);
@@ -129,9 +137,6 @@ public class BoardDao {
 				memberDto.setMember_id(rs.getString("member_id"));
 				
 				bDto.setMemberDto(memberDto);
-				
-				System.out.println(rs.getString("member_email"));
-			
 			 }
 		} catch(Exception e) {	
 			System.out.println("게시글 조회 실패");
@@ -154,7 +159,7 @@ public class BoardDao {
 	
 		
 	}
-	public List<BoardDto> contentSearch(String searchKeyword , String searchType) { // 게시판의 글 목록에서 유저가 클릭한 글 번호의 글 dto 반환 메서드
+	public List<BoardDto> contentSearch(String searchKeyword , String searchType, int page) { // 게시판의 글 목록에서 유저가 클릭한 글 번호의 글 dto 반환 메서드
 		String sql ="SELECT row_number() OVER (order by bnum) AS bno, "
 				+ "b.bnum, b.btitle,b.bcontent,b.member_id, m.member_email, b.bhit, b.bdate "
 				+ "FROM board AS b "
@@ -266,7 +271,8 @@ public class BoardDao {
 				e.printStackTrace();
 			}	
 		}
-	}public void updateBhit(int bnum) { // 조회수 증가시켜주는 메서드
+	}
+	public void updateBhit(int bnum) { // 조회수 증가시켜주는 메서드
 		String sql = "UPDATE board SET bhit=bhit+1 WHERE bnum=?";
 		try {
 			Class.forName(driverName);
@@ -293,7 +299,95 @@ public class BoardDao {
 			}	
 	
 		}
-	}
+	}public List<BoardDto> boardList(int page) {
+		// page 의 값의 페이지에 해당하는 글 번호 계산
+		int offset = (page -1) * PAGE_SIZE;
+		
+		String sql = "SELECT row_number() OVER (order by bnum) AS bno, "
+				+ "b.bnum, b.btitle,b.bcontent,b.member_id, m.member_email, b.bhit, b.bdate "
+				+ "FROM board AS b "
+				+ "LEFT JOIN members AS m ON b.member_id = m.member_id "
+				+ "ORDER BY bno DESC LIMIT ? OFFSET ?";
+		
+		List<BoardDto> bDtos = new ArrayList<BoardDto>();
+		
+		try {
+			Class.forName(driverName);
+			conn = DriverManager.getConnection(url, username, password);	
+			pstmt = conn.prepareStatement(sql); 
+			pstmt.setInt(1, PAGE_SIZE);
+			pstmt.setInt(2, offset);
+			
+			rs = pstmt.executeQuery();
+			
+			while (rs.next()) {
+				int bnum = rs.getInt("bnum");
+				String btitle = rs.getString("btitle");
+				String bcontent = rs.getString("bcontent");
+				String member_id = rs.getString("member_id");
+				String member_email = rs.getString("member_email");
+				int bhit = rs.getInt("bhit");
+				String bdate = rs.getString("bdate");
+				int bno = rs.getInt("bno");
+				
+				MemberDto memberDto = new MemberDto(); 
+				memberDto.setMember_email(member_email);
+				memberDto.setMember_id(member_id);
+				
+				BoardDto bDto = new BoardDto(bno, bnum, btitle, bcontent, member_id, bhit, bdate, memberDto);
+				
+				bDtos.add(bDto);
+			}
+		} catch(Exception e) {	
+			System.out.println("로그인 체크 실패");
+			e.printStackTrace();
+		} finally { 
+			try {
+				if (rs != null) {
+				rs.close();
+				}
+				if(pstmt != null){
+				pstmt.close();
+				}
+				if(conn != null){ 	
+				conn.close();
+				} 
+			} catch(Exception e) {
+				e.printStackTrace();
+			}	
+		}
+		return bDtos;
+}public int countBoard() {
+	int count =0;
+	String sql = "SELECT * FROM board";
+	
+	// List<BoardDto> bDtos = new ArrayList<BoardDto>();
+	try {
+		Class.forName(driverName);
+		conn = DriverManager.getConnection(url, username, password);	
+		pstmt = conn.prepareStatement(sql); 
+		rs = pstmt.executeQuery();
+		
+		while (rs.next()) {
+			count++;
+		}
+	} catch(Exception e) {	
+		System.out.println("로그인 체크 실패");
+		e.printStackTrace();
+	} finally { 
+		try {
+			if (rs != null) {
+			rs.close();
+			}
+			if(pstmt != null){
+			pstmt.close();
+			}
+			if(conn != null){ 	
+			conn.close();
+			} 
+		} catch(Exception e) {
+			e.printStackTrace();
+		}	
+	}return count;
 }
-
-
+}
