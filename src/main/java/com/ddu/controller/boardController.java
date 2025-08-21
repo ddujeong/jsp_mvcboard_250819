@@ -51,10 +51,17 @@ public class boardController extends HttpServlet {
 		List<BoardDto> bDtos = new ArrayList<BoardDto>();
 		
 		if(comm.equals("/boardList.do")) { // 게시판 모든 글 목록 보기 요청
-			bDtos = bDao.boardList();
+			request.setCharacterEncoding("utf-8"); 
+			String searchType = request.getParameter("searchType");
+			String searchKeyword = request.getParameter("searchKeyword");
+			
+			if (searchType != null && searchKeyword != null && !searchKeyword.strip().isEmpty()) { // 유저가 검색 결과 리스트를 원하는 경우
+				bDtos = bDao.contentSearch(searchKeyword, searchType);
+			} else { // 전체 글 리스트를 원하는 경우
+				bDtos = bDao.boardList();
+			}
 			request.setAttribute("bDtos", bDtos);		
 			viewPage = "boardList.jsp";
-		
 		} else if (comm.equals("/writeForm.do")) { // 글쓰기 폼으로 이동 요청
 			session = request.getSession();
 			String sid =(String) session.getAttribute("session_id");
@@ -117,25 +124,23 @@ public class boardController extends HttpServlet {
 				request.setAttribute("bDtos", bDtos);	
 			viewPage = "contentView.jsp";
 		
-		} else if (comm.equals("/search.do")) { // 글 내용 확인 요청
-			request.setCharacterEncoding("utf-8"); 
-			bDtos = bDao.boardList(); 
-			String empty = "";
-			String btitle = request.getParameter("btitle"); // 유저가 선택한 글의 번호 bDtos =
-			bDao.contentSearch(btitle.trim());
-			System.out.println(btitle.trim());
-			
-			  if (btitle.equals(empty)) { // 해당글이 존재 하지 않을때
-			  request.setAttribute("deleteMsg", "해당 제목의 게시글은 존재하지 않는 글 입니다."); 
-			  } 
-		
-		  request.setAttribute("bDtos", bDtos);
-  
-		  viewPage = "boardList.do";
-  
-		}else if (comm.equals("/index.do")) { // 홈 화면으로 이동 요청
+		} /*
+			 * else if (comm.equals("/search.do")) { // 검색 글 목록 확인 요청
+			 * request.setCharacterEncoding("utf-8"); String searchType =
+			 * request.getParameter("searchType"); String searchKeyword =
+			 * request.getParameter("searchKeyword"); bDtos =
+			 * bDao.contentSearch(searchKeyword); if (searchType !=null) { // 유저가 검색 결과 리스트를
+			 * 워하는 경우
+			 * 
+			 * } if (bDtos.isEmpty() || searchKeyword ==null ||
+			 * searchKeyword.trim().isEmpty()) { // 해당글이 존재 하지 않을때
+			 * request.setAttribute("deleteMsg", "해당 제목의 게시글은 존재하지 않는 글 입니다.");
+			 * response.sendRedirect("boardList.do?msg=1"); return; }
+			 * request.setAttribute("bDtos", bDtos); viewPage = "boardList.jsp";
+			 * 
+			 * }
+			 */ else if (comm.equals("/index.do")) { // 홈 화면으로 이동 요청
 			viewPage = "index.jsp";
-		
 		} else if (comm.equals("/writeOk.do")) { // 홈 화면으로 이동 요청
 			request.setCharacterEncoding("utf-8");
 			
@@ -163,14 +168,16 @@ public class boardController extends HttpServlet {
 			if (loginFlag == 1) {
 				session =request.getSession();
 				session.setAttribute("session_id", login_id);
-			} else if (comm.equals("/logout.do")) { 
-				
 			} else {
 				response.sendRedirect("login.do?msg=1");
 				return;
 			}
 			viewPage = "boardList.do";
 		
+		} else if (comm.equals("/logout.do")) { 
+			session =request.getSession();
+			session.invalidate();
+			viewPage = "index.jsp";
 		} else { // 없는 주소를 입력 했을 때 인덱스 페이지로 돌아가게 만들어줌
 			viewPage = "index.jsp";
 		}

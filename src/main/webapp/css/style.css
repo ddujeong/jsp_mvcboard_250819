@@ -101,6 +101,7 @@ a {
 
 .action-btn.delete:hover {
   background: #ef4444;
+  color: #ffffff;
 }
 
 /* ----------------------------
@@ -326,6 +327,29 @@ nav a:hover {
   overflow: hidden;
 }
 
+.search-form select {
+  border: none;
+  padding: 8px 12px;
+  font-size: 14px;
+  background: white;
+  cursor: pointer;
+  /* input과 비슷한 너비로 맞추거나 필요시 조절 */
+  width: 120px;
+  /* 기본 셀렉트 화살표 위치 조절 */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  /* 오른쪽에 화살표 공간 확보 */
+  background-image: url("data:image/svg+xml;charset=US-ASCII,%3csvg%20width%3d'10'%20height%3d'6'%20viewBox%3d'0%200%2010%206'%20fill%3d'none'%20xmlns%3d'http%3a//www.w3.org/2000/svg'%3e%3cpath%20d%3d'M1%201L5%205L9%201'%20stroke%3d'%236366F1'%20stroke-width%3d'2'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 10px 6px;
+}
+
+.search-form select:focus {
+  outline: none;
+}
+
 .search-form input {
   border: none;
   padding: 8px 12px;
@@ -350,6 +374,7 @@ nav a:hover {
 .search-form button:hover {
   background: #4f46e5;
 }
+
 .action-btn.secondary {
   border-color: #9ca3af;
   color: #374151;

@@ -154,27 +154,37 @@ public class BoardDao {
 	
 		
 	}
-	public List<BoardDto> contentSearch(String searchBtitle) { // 게시판의 글 목록에서 유저가 클릭한 글 번호의 글 dto 반환 메서드
-		String sql ="SELECT * FROM board WHERE btitle LIKE %?% ORDER BY bnum DESC";
+	public List<BoardDto> contentSearch(String searchKeyword , String searchType) { // 게시판의 글 목록에서 유저가 클릭한 글 번호의 글 dto 반환 메서드
+		String sql ="SELECT row_number() OVER (order by bnum) AS bno, "
+				+ "b.bnum, b.btitle,b.bcontent,b.member_id, m.member_email, b.bhit, b.bdate "
+				+ "FROM board AS b "
+				+ "INNER JOIN members AS m ON b.member_id = m.member_id "
+				+ "WHERE "+ searchType +" LIKE ? ORDER BY bno DESC";
 		List<BoardDto> bDtos = new ArrayList<BoardDto>();
 		try {
 			Class.forName(driverName);
 			conn = DriverManager.getConnection(url, username, password);	
 			pstmt = conn.prepareStatement(sql); 
 			
-			pstmt.setString(1, "%"+searchBtitle.trim()+"%");
+			pstmt.setString(1, "%"+searchKeyword.trim()+"%");
 			
 			rs = pstmt.executeQuery();
 			
 			while (rs.next()) {
 				int bnum = rs.getInt("bnum");
+				int bno = rs.getInt("bno");
 				String btitle = rs.getString("btitle");
 				String bcontent = rs.getString("bcontent");
+				String member_email = rs.getString("member_email");
 				String member_id = rs.getString("member_id");
 				int bhit = rs.getInt("bhit");
 				String bdate = rs.getString("bdate");
 				
-				BoardDto bDto = new BoardDto(bnum, btitle, bcontent, member_id, bhit, bdate);
+				MemberDto memberDto = new MemberDto(); 
+				memberDto.setMember_email(member_email);
+				memberDto.setMember_id(member_id);
+				
+				BoardDto bDto = new BoardDto(bno, bnum, btitle, bcontent, member_id, bhit, bdate, memberDto);
 				
 				bDtos.add(bDto);
 			}
