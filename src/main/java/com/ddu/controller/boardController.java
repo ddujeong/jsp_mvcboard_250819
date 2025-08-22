@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.ddu.command.BCommand;
+import com.ddu.command.BWriteCommand;
 import com.ddu.dao.BoardDao;
 import com.ddu.dao.MemberDao;
 import com.ddu.dto.BoardDto;
@@ -20,6 +22,7 @@ import com.ddu.dto.BoardDto;
 public class boardController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	public static final int PAGE_GROUP_SIZE = 5;
+	BCommand bCommand;
        
     public boardController() {
         super();
@@ -67,22 +70,26 @@ public class boardController extends HttpServlet {
 				// 유저가 클릭한 보고싶은 페이지 번호
 			}
 			if (searchType != null && searchKeyword != null && !searchKeyword.strip().isEmpty()) { // 유저가 검색 결과 리스트를 원하는 경우
-				bDtos = bDao.contentSearch(searchKeyword, searchType, page);
-				totalBoardCount = bDtos.get(0).getBno();
+				bDtos = bDao.contentSearch(searchKeyword, searchType, 1);
+				if (!bDtos.isEmpty()) {
+					totalBoardCount = bDtos.get(0).getBno();
+				}
 				bDtos = bDao.contentSearch(searchKeyword, searchType, page);
 				request.setAttribute("searchType", searchType);
 				request.setAttribute("searchKeyword", searchKeyword);
 			} else { // 전체 글 리스트를 원하는 경우
 				bDtos = bDao.boardList(1);
-				totalBoardCount = bDtos.get(0).getBno();
+				if (!bDtos.isEmpty()) {
+					totalBoardCount = bDtos.get(0).getBno();
+				}
 				bDtos = bDao.boardList(page);
 			}
 			int totalPage = (int)Math.ceil((double)totalBoardCount / BoardDao.PAGE_SIZE);
 			// 모든 글의 갯수 구해서 소수점을 올려주는 방정식 
 			int startPage = (((page -1) /PAGE_GROUP_SIZE) * PAGE_GROUP_SIZE) + 1 ; 
-			int endPage = Math.min(startPage + (PAGE_GROUP_SIZE -1), totalPage) ;
+			// int endPage = Math.min(startPage + (PAGE_GROUP_SIZE -1), totalPage) ;
 			// 마지막 페이지 그룹의 경우에는 실제 마지막 페이지로 표시 (그룹의 마지막 페이지, 총 페이지) 중 작은 수를 구함
-			
+			int endPage = (startPage + (PAGE_GROUP_SIZE -1)) ;
 			
 			request.setAttribute("bDtos", bDtos);
 			request.setAttribute("totalPage",totalPage); // 전체 글 갯수로 계산한 전체 페이지 수
@@ -90,6 +97,10 @@ public class boardController extends HttpServlet {
 			request.setAttribute("startPage",startPage); // 그룹으로 나눈 페이지의 시작
 			request.setAttribute("endPage",endPage); // 그룹으로 나눈 페이지의 끝
 			request.setAttribute("totalBoardCount", totalBoardCount);
+			System.out.println("startPage : " + startPage);
+			System.out.println("endPage : " +endPage);
+			System.out.println("totalPage : " +totalPage);
+			System.out.println(startPage + (PAGE_GROUP_SIZE -1));
 			
 			viewPage = "boardList.jsp";
 		} else if (comm.equals("/writeForm.do")) { // 글쓰기 폼으로 이동 요청
@@ -112,14 +123,20 @@ public class boardController extends HttpServlet {
 		} else if (comm.equals("/modify.do")) { // 글 수정 후 글내용 보기로 이동 요청
 			request.setCharacterEncoding("utf-8");
 
-			int bnum = Integer.parseInt(request.getParameter("bnum"));
-			String btitle = request.getParameter("btitle");
-			String bcontent = request.getParameter("bcontent");
+//			int bnum = Integer.parseInt(request.getParameter("bnum"));
+//			String btitle = request.getParameter("btitle");
+//			String bcontent = request.getParameter("bcontent");
+//			
+//			bDao.contentModify(btitle, bcontent, bnum);
+//			
+//			BoardDto bDto = bDao.contentView(bnum);
+//			request.setAttribute("bDto", bDto);
+
+			//BModifyCommand bModifyCommand =new BModifyCommand(); 
+			//bModifyCommand.excute(request, response);
 			
-			bDao.contentModify(btitle, bcontent, bnum);
-			
-			BoardDto bDto = bDao.contentView(bnum);
-			request.setAttribute("bDto", bDto);
+			bCommand = new BWriteCommand();
+			bCommand.excute(request, response);
 			
 			viewPage = "contentView.do";
 		
@@ -143,27 +160,31 @@ public class boardController extends HttpServlet {
 			bDao.updateBhit(bnum); // 조회수 증가
 			
 			BoardDto bDto = bDao.contentView(bnum);	
-				if (bDto == null) { // 해당글이 존재 하지 않을때
+			if (bDto == null) { // 해당글이 존재 하지 않을때
 					 request.setAttribute("deleteMsg", "해당글은 존재하지 않는 글 입니다.");
-					// response.sendRedirect("boardList.do?msg=1"); // -> 2번째 방법 
+				// response.sendRedirect("boardList.do?msg=1"); // -> 2번째 방법 
 					// return;
 				} else {
 					request.setAttribute("bDto", bDto);
 				}
 				
 				System.out.println(bnum);
+			
 			viewPage = "contentView.jsp";
 		
 		} else if (comm.equals("/index.do")) { // 홈 화면으로 이동 요청
 			viewPage = "index.jsp";
 		} else if (comm.equals("/writeOk.do")) { // 홈 화면으로 이동 요청
-			request.setCharacterEncoding("utf-8");
+//			request.setCharacterEncoding("utf-8");
+//			
+//			String btitle = request.getParameter("btitle");
+//			String bcontent = request.getParameter("bcontent");
+//			String member_id = request.getParameter("member_id");
+//			
+//			bDao.boardWrite(btitle, bcontent,member_id);
 			
-			String btitle = request.getParameter("btitle");
-			String bcontent = request.getParameter("bcontent");
-			String member_id = request.getParameter("member_id");
-			
-			bDao.boardWrite(btitle, bcontent,member_id);
+			BWriteCommand bWriteCommand = new BWriteCommand();
+			bWriteCommand.excute(request, response);
 			
 			response.sendRedirect("boardList.do");
 		    return; 

@@ -13,7 +13,7 @@
 </head>
 <body>
 <%@ include file="header.jsp" %>
-	
+
 <div class="container">
  <div class="header">
   <div class="board-title">
