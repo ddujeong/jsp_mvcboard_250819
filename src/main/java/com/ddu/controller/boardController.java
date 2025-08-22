@@ -44,50 +44,52 @@ public class boardController extends HttpServlet {
 		String comm =(uri.substring(conPath.length())); // 최종 요청 값
 		String viewPage = "";
 		
-		
 		BoardDao bDao = new BoardDao();
 		MemberDao mDao =new MemberDao();
 		HttpSession session = null;
 		// 세션 객체 생성 하는 법
 		
-		//int page =1;
-		int totalBoardCount = bDao.countBoard();
-		
 		List<BoardDto> bDtos = new ArrayList<BoardDto>();
-		List<BoardDto> countDtos = new ArrayList<BoardDto>();
+		//List<BoardDto> countDtos = new ArrayList<BoardDto>();
 		
-		if(comm.equals("/boardList.do")) { // 게시판 모든 글 목록 보기 요청
+		
+	if(comm.equals("/boardList.do")) { // 게시판 모든 글 목록 보기 요청
 			request.setCharacterEncoding("utf-8"); 
 			String searchType = request.getParameter("searchType");
 			String searchKeyword = request.getParameter("searchKeyword");
-			int page =Integer.parseInt(request.getParameter("page"));
+			int page = 1;
+			int totalBoardCount = 0; // 모든 글의 갯수
 			
 			if (request.getParameter("page") == null) { // 참이면 링크타고 게시판으로 들어온 경우
 				page = 1;
 			} else { // 유저가 보고 싶은 페이지 번호를 누른 경우
-				page =Integer.parseInt(request.getParameter("page"));
+				page = Integer.parseInt(request.getParameter("page"));
 				// 유저가 클릭한 보고싶은 페이지 번호
 			}
-			int totalPage = (int)Math.ceil((double)totalBoardCount / BoardDao.PAGE_SIZE);
-			int startPage = (((page -1) /PAGE_GROUP_SIZE) * PAGE_GROUP_SIZE) + 1 ; 
-			int endPage = Math.min(startPage + PAGE_GROUP_SIZE -1, totalPage) ;
-			
-			
 			if (searchType != null && searchKeyword != null && !searchKeyword.strip().isEmpty()) { // 유저가 검색 결과 리스트를 원하는 경우
-				bDtos = bDao.contentSearch(searchKeyword, searchType, 1);
-				countDtos = bDao.contentSearch(searchKeyword, searchType, 1);
-				// bDtos =bDao.boardList(page);
+				bDtos = bDao.contentSearch(searchKeyword, searchType, page);
+				totalBoardCount = bDtos.get(0).getBno();
+				bDtos = bDao.contentSearch(searchKeyword, searchType, page);
+				request.setAttribute("searchType", searchType);
+				request.setAttribute("searchKeyword", searchKeyword);
 			} else { // 전체 글 리스트를 원하는 경우
+				bDtos = bDao.boardList(1);
+				totalBoardCount = bDtos.get(0).getBno();
 				bDtos = bDao.boardList(page);
-				countDtos = bDao.boardList(1);
 			}
+			int totalPage = (int)Math.ceil((double)totalBoardCount / BoardDao.PAGE_SIZE);
+			// 모든 글의 갯수 구해서 소수점을 올려주는 방정식 
+			int startPage = (((page -1) /PAGE_GROUP_SIZE) * PAGE_GROUP_SIZE) + 1 ; 
+			int endPage = Math.min(startPage + (PAGE_GROUP_SIZE -1), totalPage) ;
+			// 마지막 페이지 그룹의 경우에는 실제 마지막 페이지로 표시 (그룹의 마지막 페이지, 총 페이지) 중 작은 수를 구함
+			
 			
 			request.setAttribute("bDtos", bDtos);
-			request.setAttribute("totalPage",countDtos.get(0).getBno()); // 전체 글 갯수로 계산한 전체 페이지 수
+			request.setAttribute("totalPage",totalPage); // 전체 글 갯수로 계산한 전체 페이지 수
 			request.setAttribute("currentPage", page); // 현재 페이지 넘버
-			request.setAttribute("startPage",startPage); // 그룹으로 나는 페이지의 시작
-			request.setAttribute("endPage",endPage); // 그룹으로 나는 페이지의 끝
-			
+			request.setAttribute("startPage",startPage); // 그룹으로 나눈 페이지의 시작
+			request.setAttribute("endPage",endPage); // 그룹으로 나눈 페이지의 끝
+			request.setAttribute("totalBoardCount", totalBoardCount);
 			
 			viewPage = "boardList.jsp";
 		} else if (comm.equals("/writeForm.do")) { // 글쓰기 폼으로 이동 요청
@@ -148,8 +150,8 @@ public class boardController extends HttpServlet {
 				} else {
 					request.setAttribute("bDto", bDto);
 				}
-				bDtos = bDao.boardList();
-				request.setAttribute("bDtos", bDtos);	
+				
+				System.out.println(bnum);
 			viewPage = "contentView.jsp";
 		
 		} else if (comm.equals("/index.do")) { // 홈 화면으로 이동 요청

@@ -29,7 +29,7 @@
     	</c:otherwise>
     </c:choose>
     
-    <a href="boardList.do" class="enter-btn">게시판 바로가기</a>
+    <a href="boardList.do?" class="enter-btn">게시판 바로가기</a>
   </div>
 </main>
 
